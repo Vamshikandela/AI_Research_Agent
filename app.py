@@ -125,14 +125,14 @@ if st.session_state.running and not st.session_state.done:
     st.session_state.results = dict(results)
     st.rerun()
 
-if "reader" not in results:
-    with st.chat_message("assistant", avatar="📄"):
-        st.markdown('<div class="agent-tag">Reader Agent</div>', unsafe_allow_html=True)
-        with st.spinner("Scraping the most relevant source…"):
-            top_url = results["search_hits"][0]["url"]
-            results["reader"] = scrape_direct(top_url)
-    st.session_state.results = dict(results)
-    st.rerun()
+    if "reader" not in results:
+        with st.chat_message("assistant", avatar="📄"):
+            st.markdown('<div class="agent-tag">Reader Agent</div>', unsafe_allow_html=True)
+            with st.spinner("Scraping the most relevant source…"):
+                top_url = results["search_hits"][0]["url"]
+                results["reader"] = scrape_direct(top_url)
+        st.session_state.results = dict(results)
+        st.rerun()
 
     if "writer" not in results:
         with st.chat_message("assistant", avatar="✍️"):
