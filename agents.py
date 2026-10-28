@@ -5,9 +5,9 @@ from tools import web_search,scrap_url
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
 from langchain_core.rate_limiters import InMemoryRateLimiter
-from langchain_groq import ChatGroq
+
 rate_limiter=InMemoryRateLimiter(requests_per_second=0.1)
-llm=ChatGroq(model="whisper-large-v3-turbo",rate_limiter=rate_limiter,
+llm=ChatMistralAI(model="mistral-small-2603",rate_limiter=rate_limiter,
     max_retries=6,temperature=0)
 
 ## 1 st agent 
