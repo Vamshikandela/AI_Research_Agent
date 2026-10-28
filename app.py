@@ -181,7 +181,7 @@ if st.session_state.running and not st.session_state.done:
                 with st.spinner("Reviewing the report…"):
                     results["critic"] = critic_chain.invoke({"report": results["writer"]})
                 st.session_state.results = dict(results)
-            except as Exception as e:
+            except  Exception as e:
                 st.session_state.running=False
                 st.error(f"crtic chain is failed {e}")
                 st.stop()
