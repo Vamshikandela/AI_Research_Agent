@@ -113,9 +113,10 @@ if st.session_state.running and not st.session_state.done:
             st.markdown('<div class="agent-tag">Search Agent</div>', unsafe_allow_html=True)
             with st.spinner("Searching the web…"):
                 search_agent = build_search_agent()
-                sr = search_agent.invoke({
-                    "messages": [("user", f"Find recent, reliable and detailed information about: {topic_val}")]
-                })
+                sr = search_agent.invoke(
+                    {"messages": [("user", f"Find recent, reliable and detailed information about: {topic_val}")]},
+                    config={"recursion_limit": 10},
+                    )
                 results["search"] = sr["messages"][-1].content
             st.session_state.results = dict(results)
             st.rerun()
