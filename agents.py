@@ -4,7 +4,8 @@ from langchain_core.output_parsers import StrOutputParser
 from tools import web_search,scrap_url
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
-
+from langchain_core.rate_limiters import InMemoryRateLimiter
+rate_limiter=InMemoryRateLimiter(requests_per_second=0.5)
 llm=ChatMistralAI(model="mistral-small-latest",rate_limiter=rate_limiter,
     max_retries=6,temperature=0)
 
