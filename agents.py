@@ -5,7 +5,8 @@ from tools import web_search,scrap_url
 from dotenv import load_dotenv
 from langchain_mistralai import ChatMistralAI
 
-llm=ChatMistralAI(model="mistral-small-latest",temperature=0)
+llm=ChatMistralAI(model="mistral-small-latest",rate_limiter=rate_limiter,
+    max_retries=6,temperature=0)
 
 ## 1 st agent 
 def build_search_agent():
