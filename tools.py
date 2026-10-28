@@ -27,10 +27,10 @@ def web_search(query: str)  ->str :
 ## webscraping tool using beautiful soup 
 ## getting the information using urls
 
-@tool
+'''@tool
 def search_direct(query: str, n: int = 4):
     res = tavily.search(query=query, max_results=n)
-    return res["results"]  # list of dicts with title, url, content
+    return res["results"]  # list of dicts with title, url, content'''
 
 def scrap_url(url :str) ->str:
 
