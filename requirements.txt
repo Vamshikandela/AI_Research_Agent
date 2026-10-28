@@ -52,6 +52,6 @@ pydantic>=2.5.0
 html5lib>=1.1
 
 ##groq
-langchain-groq
+#langchain-groq
 ##deplyment  
 streamlit
