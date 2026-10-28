@@ -28,6 +28,10 @@ def web_search(query: str)  ->str :
 ## getting the information using urls
 
 @tool
+def search_direct(query: str, n: int = 4):
+    res = tavily.search(query=query, max_results=n)
+    return res["results"]  # list of dicts with title, url, content
+
 def scrap_url(url :str) ->str:
 
     """to get the information from website urls with clean and for deeper reading"""
@@ -36,7 +40,7 @@ def scrap_url(url :str) ->str:
         soup=BeautifulSoup(resp.text,"html.parser")
         for tag in soup(["script", "style", "nav", "footer"]):  ## 
             tag.decompose()  ## removes unwanted tags style nav header footer
-        return soup.get_text(separator=" ",strip=True)[:3000]   ## to get text from the tags 
+        return soup.get_text(separator=" ",strip=True)[:4000]   ## to get text from the tags 
     except Exception as e:
         return f"could not scrape from {e}"
 
