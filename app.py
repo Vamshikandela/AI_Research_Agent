@@ -144,7 +144,7 @@ if st.session_state.running and not st.session_state.done:
                     config={"recursion_limit":10},
                             )
                     results["reader"] = rr["messages"][-1].content
-             except Exception as e:
+            except Exception as e:
                     st.session_state.running=False
                     st.error{f"reader agent is failed{e}"}
                     st.stop()
