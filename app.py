@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 from agents import build_reader_agent, build_search_agent, writer_chain, critic_chain
+import search_direct, scrape_direct from tools
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -108,7 +109,7 @@ for key, icon, label, role in STEP_ORDER:
 if st.session_state.running and not st.session_state.done:
     results = dict(r)
 
-   if "search" not in results:
+    if "search" not in results:
         with st.chat_message("assistant", avatar="🔍"):
             st.markdown('<div class="agent-tag">Search Agent</div>', unsafe_allow_html=True)
             try:
@@ -152,7 +153,7 @@ if "reader" not in results:
                 st.error("f writer agent is failed {e}")
                 st.stop()
         st.session_state.results = dict(results)
-        st.sleep(2)
+        st.sleep(5)
         st.rerun()
 
     if "critic" not in results:
