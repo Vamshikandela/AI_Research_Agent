@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 from agents import build_reader_agent, build_search_agent, writer_chain, critic_chain
-import search_direct, scrape_direct from tools
+from tools import search_direct, scrape_direct 
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(
