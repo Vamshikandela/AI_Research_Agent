@@ -109,19 +109,19 @@ if st.session_state.running and not st.session_state.done:
     results = dict(r)
 
    if "search" not in results:
-    with st.chat_message("assistant", avatar="🔍"):
-        st.markdown('<div class="agent-tag">Search Agent</div>', unsafe_allow_html=True)
-        try:
-            with st.spinner("Searching the web…"):
-                hits = search_direct(topic_val)
-                results["search_hits"] = hits
-                results["search"] = "\n\n".join(
-                    f"{h['title']}\n{h['url']}\n{h['content'][:400]}" for h in hits
-                )
-        except Exception as e:
-            st.session_state.running = False
-            st.error(f"Search failed: {e}")
-            st.stop()
+        with st.chat_message("assistant", avatar="🔍"):
+            st.markdown('<div class="agent-tag">Search Agent</div>', unsafe_allow_html=True)
+            try:
+                with st.spinner("Searching the web…"):
+                    hits = search_direct(topic_val)
+                    results["search_hits"] = hits
+                    results["search"] = "\n\n".join(
+                        f"{h['title']}\n{h['url']}\n{h['content'][:400]}" for h in hits
+                    )
+            except Exception as e:
+                st.session_state.running = False
+                st.error(f"Search failed: {e}")
+                st.stop()
     st.session_state.results = dict(results)
     st.rerun()
 
