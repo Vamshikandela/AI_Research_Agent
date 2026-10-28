@@ -111,57 +111,84 @@ if st.session_state.running and not st.session_state.done:
     if "search" not in results:
         with st.chat_message("assistant", avatar="🔍"):
             st.markdown('<div class="agent-tag">Search Agent</div>', unsafe_allow_html=True)
-            with st.spinner("Searching the web…"):
-                search_agent = build_search_agent()
-                sr = search_agent.invoke(
-                    {"messages": [("user", f"Find recent, reliable and detailed information about: {topic_val}")]},
-                    config={"recursion_limit": 10},
-                    )
-                results["search"] = sr["messages"][-1].content
-            st.session_state.results = dict(results)
-            st.rerun()
+            try:
+                with st.spinner("Searching the web…"):
+                    search_agent = build_search_agent()
+                    sr = search_agent.invoke(
+                        {"messages": [("user", f"Find recent, reliable and detailed information about: {topic_val}")]},
+                        config={"recursion_limit": 10},
+                        )
+                    results["search"] = sr["messages"][-1].content
+            except Exception as e:
+                    st.session_state.running=False
+                    st.error(f"search agent is failed{e}")
+                    st.stop()
+                
+        st.session_state.results = dict(results)
+        st.sleep(2)
+        st.rerun()
 
     if "reader" not in results:
         with st.chat_message("assistant", avatar="📄"):
             st.markdown('<div class="agent-tag">Reader Agent</div>', unsafe_allow_html=True)
-            with st.spinner("Scraping the most relevant source…"):
-                reader_agent = build_reader_agent()
-                rr = reader_agent.invoke({
-                    "messages": [("user",
-                        f"Based on the following search results about '{topic_val}', "
-                        f"pick the most relevant URL and scrape it for deeper content.\n\n"
-                        f"Search Results:\n{results['search'][:800]}"
-                    )]
-                })
-                results["reader"] = rr["messages"][-1].content
-            st.session_state.results = dict(results)
-            st.rerun()
+            try:
+                with st.spinner("Scraping the most relevant source…"):
+                    reader_agent = build_reader_agent()
+                   
+                    rr = reader_agent.invoke({
+                            "messages": [("user",
+                                f"Based on the following search results about '{topic_val}', "
+                                f"pick the most relevant URL and scrape it for deeper content.\n\n"
+                                f"Search Results:\n{results['search'][:800]}"
+                            )]},
+                    config={"recursion_limit":10},
+                            )
+                    results["reader"] = rr["messages"][-1].content
+                with except Exception as e:
+                    st.session_state.running=False
+                    st.error{f"reader agent is failed{e}"}
+                    st.stop()
+            
+    st.session_state.results = dict(results)
+    st.sleep(2)
+    st.rerun()
 
     if "writer" not in results:
         with st.chat_message("assistant", avatar="✍️"):
             st.markdown('<div class="agent-tag">Writer Chain</div>', unsafe_allow_html=True)
-            with st.spinner("Drafting the report…"):
-                research_combined = (
-                    f"SEARCH RESULTS:\n{results['search']}\n\n"
-                    f"DETAILED SCRAPED CONTENT:\n{results['reader']}"
-                )
-                results["writer"] = writer_chain.invoke({
-                    "topic": topic_val,
-                    "research": research_combined
-                })
-            st.session_state.results = dict(results)
-            st.rerun()
+            try:
+                with st.spinner("Drafting the report…"):
+                    research_combined = (
+                        f"SEARCH RESULTS:\n{results['search']}\n\n"
+                        f"DETAILED SCRAPED CONTENT:\n{results['reader']}"
+                    )
+                    results["writer"] = writer_chain.invoke({
+                        "topic": topic_val,
+                        "research": research_combined
+                    })
+            except Exception as e:
+                st.session_state.running=False
+                st.error("f writer agent is failed {e}")
+                st.stop()
+        st.session_state.results = dict(results)
+        st.sleep(2)
+        st.rerun()
 
     if "critic" not in results:
         with st.chat_message("assistant", avatar="🧐"):
             st.markdown('<div class="agent-tag">Critic Chain</div>', unsafe_allow_html=True)
-            with st.spinner("Reviewing the report…"):
-                results["critic"] = critic_chain.invoke({"report": results["writer"]})
-            st.session_state.results = dict(results)
+            try:
+                with st.spinner("Reviewing the report…"):
+                    results["critic"] = critic_chain.invoke({"report": results["writer"]})
+                st.session_state.results = dict(results)
+            except as Exception as e:
+                st.session_state.running=False
+                st.error(f"crtic chain is failed {e}")
+                st.stop()
 
-        st.session_state.running = False
-        st.session_state.done = True
-        st.rerun()
+    st.session_state.running = False
+    st.session_state.done = True
+    st.rerun()
 
 # ── Download once complete ───────────────────────────────────────────────────
 if st.session_state.done and "writer" in r:
