@@ -11,7 +11,23 @@ tavily=TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 
 ## --- it is a tool used for search the information/news from website and 
 ## geting the urls and titles snippets
+def search_direct(query: str, n: int = 4):
+    res = tavily.search(query=query, max_results=n)
+    return res["results"]
+def scrape_direct(url: str, limit: int = 4000) -> str:
+    try:
+        resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for tag in soup(["script", "style", "nav", "footer"]):
+            tag.decompose()
+        return soup.get_text(separator=" ", strip=True)[:limit]
+    except Exception as e:
+        return f"could not scrape from {e}"
 
+
+
+
+## langchain tools
 @tool
 def web_search(query: str)  ->str :
     """search for recent and reliable news on topic . returns titles,URL's, snippets""" 
@@ -27,10 +43,6 @@ def web_search(query: str)  ->str :
 ## webscraping tool using beautiful soup 
 ## getting the information using urls
 
-'''@tool
-def search_direct(query: str, n: int = 4):
-    res = tavily.search(query=query, max_results=n)
-    return res["results"]  # list of dicts with title, url, content'''
 
 def scrap_url(url :str) ->str:
 
