@@ -108,49 +108,30 @@ for key, icon, label, role in STEP_ORDER:
 if st.session_state.running and not st.session_state.done:
     results = dict(r)
 
-    if "search" not in results:
-        with st.chat_message("assistant", avatar="🔍"):
-            st.markdown('<div class="agent-tag">Search Agent</div>', unsafe_allow_html=True)
-            try:
-                with st.spinner("Searching the web…"):
-                    search_agent = build_search_agent()
-                    sr = search_agent.invoke(
-                        {"messages": [("user", f"Find recent, reliable and detailed information about: {topic_val}")]},
-                        config={"recursion_limit": 10},
-                        )
-                    results["search"] = sr["messages"][-1].content
-            except Exception as e:
-                    st.session_state.running=False
-                    st.error(f"search agent is failed{e}")
-                    st.stop()
-                
-        st.session_state.results = dict(results)
-        st.sleep(2)
-        st.rerun()
-
-    if "reader" not in results:
-        with st.chat_message("assistant", avatar="📄"):
-            st.markdown('<div class="agent-tag">Reader Agent</div>', unsafe_allow_html=True)
-            try:
-                with st.spinner("Scraping the most relevant source…"):
-                    reader_agent = build_reader_agent()
-                   
-                    rr = reader_agent.invoke({
-                            "messages": [("user",
-                                f"Based on the following search results about '{topic_val}', "
-                                f"pick the most relevant URL and scrape it for deeper content.\n\n"
-                                f"Search Results:\n{results['search'][:800]}"
-                            )]},
-                    config={"recursion_limit":10},
-                            )
-                    results["reader"] = rr["messages"][-1].content
-            except Exception as e:
-                    st.session_state.running=False
-                    st.error("reader agent is failed{e}")
-                    st.stop()
-            
+   if "search" not in results:
+    with st.chat_message("assistant", avatar="🔍"):
+        st.markdown('<div class="agent-tag">Search Agent</div>', unsafe_allow_html=True)
+        try:
+            with st.spinner("Searching the web…"):
+                hits = search_direct(topic_val)
+                results["search_hits"] = hits
+                results["search"] = "\n\n".join(
+                    f"{h['title']}\n{h['url']}\n{h['content'][:400]}" for h in hits
+                )
+        except Exception as e:
+            st.session_state.running = False
+            st.error(f"Search failed: {e}")
+            st.stop()
     st.session_state.results = dict(results)
-    st.sleep(2)
+    st.rerun()
+
+if "reader" not in results:
+    with st.chat_message("assistant", avatar="📄"):
+        st.markdown('<div class="agent-tag">Reader Agent</div>', unsafe_allow_html=True)
+        with st.spinner("Scraping the most relevant source…"):
+            top_url = results["search_hits"][0]["url"]
+            results["reader"] = scrape_direct(top_url)
+    st.session_state.results = dict(results)
     st.rerun()
 
     if "writer" not in results:
