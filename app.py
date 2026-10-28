@@ -146,7 +146,7 @@ if st.session_state.running and not st.session_state.done:
                     results["reader"] = rr["messages"][-1].content
             except Exception as e:
                     st.session_state.running=False
-                    st.error{f"reader agent is failed{e}"}
+                    st.error("reader agent is failed{e}")
                     st.stop()
             
     st.session_state.results = dict(results)
